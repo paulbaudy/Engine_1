@@ -19,21 +19,27 @@ define([
 
     static create(description) {
       const scene = new Scene(description);
+        console.log(scene);
       scene.objects = [];
 
-      var promiseses = [];
+      var promises = [];
 
       for(var i in description) {
         var sceneObject = SceneObject.create(i, description[i], scene);
-        promiseses.push(sceneObject.promise);
+        promises.push(sceneObject.promise);
         scene.objects.push(sceneObject);
       }
 
       /*for(var i in scene.objects) {
         scene.objects[i].setup();
       }*/
-
-      return Promise.all(promiseses);
+      /*Promise.all(promises).then(function() {
+        console.log("Promises ok!");
+        return Promise.resolve(scene);
+      });*/
+      return new Promise(function(resolve) {
+          resolve(scene);
+      });
     }
 
     // ## Méthode *display*

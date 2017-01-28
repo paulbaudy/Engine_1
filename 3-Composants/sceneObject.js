@@ -34,10 +34,8 @@ define([
         for(var i in currentObj.description['children']) {
           currentObj.addChild(i, currentObj.description['children'][i]);
         }
+        resolve(currentObj.owner);
       }
-
-
-
     }
 
     addComponent(comp) {

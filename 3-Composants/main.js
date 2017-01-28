@@ -28,6 +28,7 @@ define([
         return Scene.create(sceneDescription);
       })
       .then((scene) => {
+        console.log(scene);
         const displayFn = scene.display.bind(scene);
         const updateFn = scene.update.bind(scene);
 
