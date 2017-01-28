@@ -38,8 +38,10 @@ define([
       });*/
 
       return Promise.all(promises.map(function(sceneObj) {
+        console.log("bonjour");
            return sceneObj.setup();
       })).then(function() {
+
            return scene;
       });
       /* return new Promise(function(resolve) {
@@ -70,9 +72,8 @@ define([
     // portant le nom spécifié.
     findObject(objectName) {
       for(var i in this.objects) {
-        if(this.objects[i].name == objectName) {
-          return this.objects[i];
-        }
+        var res = this.objects[i].findObjectInChildren(objectName);
+        if(res) return res;
       }
       return null;
     }

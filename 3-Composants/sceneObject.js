@@ -12,12 +12,14 @@ define([
     // ## Méthode *addComponent*
     // Cette méthode prend en paramètre le type d'un composant et
     // instancie un nouveau composant.
+    constructor() {
+      this.components = [];
+      this.children = [];
+    }
 
     static create(name, description, owner) {
         const sceneObj = new SceneObject();
         sceneObj.name = name;
-        sceneObj.components = [];
-        sceneObj.children = [];
         sceneObj.owner = owner;
         sceneObj.description = description;
         return sceneObj;
@@ -27,29 +29,38 @@ define([
       var currentObj = this;
       var action = function(resolve) {
         for(var i in currentObj.description['components']) {
-           var comp = {type : i, descr : currentObj.description['components'][i]}
-           currentObj.addComponent(comp);
+           //var comp = {type : i, descr : currentObj.description['components'][i]}
+           currentObj.addComponent(i);
         }
 
         for(var i in currentObj.description['children']) {
 
           currentObj.addChild(i, currentObj.description['children'][i]);
         }
-        return Promise.all(currentObj.children.map(function(sceneObj) {
+        /* return Promise.all(currentObj.children.map(function(sceneObj) {
              return sceneObj.setup();
         })).then(function() {
              resolve(currentObj.owner);
-        });
-
+        });*/
+        resolve(currentObj.owner);
       }
 
       return new Promise(action);
     }
 
-    addComponent(comp) {
-      const newComponent = ComponentFactory.create(comp.type, this);
-      newComponent.setup(comp.descr);
-      this.components.push({type : comp.type, obj : newComponent});
+    addComponent(type) {
+      const newComponent = ComponentFactory.create(type, this);
+      if(this.description) {
+        for(var i in this.description['components']) {
+             if(type == i) {
+               console.log("setup");
+                newComponent.setup(this.description['components'][i]);
+                break;
+             }
+        }
+      }
+
+      this.components.push({type : type, obj : newComponent});
     }
 
     // ## Fonction *getComponent*
@@ -66,7 +77,9 @@ define([
     // La méthode *addChild* ajoute à l'objet courant un objet
     // enfant.
     addChild(objectName, child) {
-      this.children.push(SceneObject.create(objectName, child));
+      var myChild = SceneObject.create(objectName, child, this.owner);
+      myChild.setup();
+      this.children.push(myChild);
 
     }
 
@@ -87,6 +100,20 @@ define([
     // classe *Scene*.
     findObjectInScene(objectName) {
       return this.owner.findObject(objectName);
+    }
+
+    findObjectInChildren(objectName) {
+        if(this.name == objectName) return this;
+        if(this.children.length > 0) {
+          for(var i in this.children) {
+             if(this.children[i].name == objectName) return this.children[i];
+             else {
+                 var res = this.children[i].findObjectInChildren(objectName);
+                 if(res) return res;
+             }
+          }
+        }
+        return null;
     }
 
     // ## Méthode *display*

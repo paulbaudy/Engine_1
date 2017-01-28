@@ -300,6 +300,7 @@ define([
 
       Scene.create(sampleScene)
         .then(() => {
+          console.log(callsCount);
           expect(callsCount).equals(0);
           done();
         })

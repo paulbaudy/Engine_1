@@ -71,12 +71,14 @@ define([
       const sceneObj = new SceneObject();
 
       TestComponent.onCreate = (comp) => {
+
         expect(comp.type).equals('TestComp');
         expect(comp.owner).equals(sceneObj);
         done();
       };
 
       sceneObj.addComponent('TestComp');
+
     });
 
     // Ce test vérifie si on peut chercher un composant existant
@@ -115,6 +117,7 @@ define([
       sceneObj.addChild('un', child1);
       sceneObj.addChild('deux', child2);
       let value = sceneObj.getChild('un');
+      console.log(value);
       expect(value).equals(child1);
       value = sceneObj.getChild('deux');
       expect(value).equals(child2);
