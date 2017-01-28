@@ -19,14 +19,13 @@ define([
 
     static create(description) {
       const scene = new Scene(description);
-        console.log(scene);
       scene.objects = [];
 
       var promises = [];
 
       for(var i in description) {
         var sceneObject = SceneObject.create(i, description[i], scene);
-        promises.push(sceneObject.promise);
+        promises.push(sceneObject);
         scene.objects.push(sceneObject);
       }
 
@@ -37,23 +36,33 @@ define([
         console.log("Promises ok!");
         return Promise.resolve(scene);
       });*/
-      return new Promise(function(resolve) {
-          resolve(scene);
+
+      return Promise.all(promises.map(function(sceneObj) {
+           return sceneObj.setup();
+      })).then(function() {
+           return scene;
       });
+      /* return new Promise(function(resolve) {
+          resolve(scene);
+      }); */
     }
 
     // ## Méthode *display*
     // Cette méthode appelle les méthodes *display* de tous les
     // objets de la scène.
     display(dT) {
-      throw new Error('Not implemented');
+      for(var i in this.objects) {
+        this.objects[i].display(dT);
+      }
     }
 
     // ## Méthode *update*
     // Cette méthode appelle les méthodes *update* de tous les
     // objets de la scène.
     update(dT) {
-      throw new Error('Not implemented');
+      for(var i in this.objects) {
+        this.objects[i].update(dT);
+      }
     }
 
     // ## Fonction *findObject*
@@ -61,7 +70,9 @@ define([
     // portant le nom spécifié.
     findObject(objectName) {
       for(var i in this.objects) {
-        if(this.objects[i].name == objectName) return this.objects[i];
+        if(this.objects[i].name == objectName) {
+          return this.objects[i];
+        }
       }
       return null;
     }

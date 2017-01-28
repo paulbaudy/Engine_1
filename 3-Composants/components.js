@@ -255,6 +255,7 @@ define(() => {
       descr.obstacles.forEach((name) => {
         this.obstacles.push(this.owner.findObjectInScene(name));
       });
+
     }
 
     // ### Méthode *update*
@@ -271,6 +272,7 @@ define(() => {
 
       this.obstacles.forEach((obj) => {
         const otherCollider = obj.getComponent('Collider');
+
         if (area.intersectsWith(otherCollider.area)) {
           this.collision = obj;
         }

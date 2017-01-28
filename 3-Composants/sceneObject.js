@@ -23,7 +23,7 @@ define([
         return sceneObj;
     }
 
-    setup(resolve) {
+    setup() {
       var currentObj = this;
       var action = function(resolve) {
         for(var i in currentObj.description['components']) {
@@ -32,10 +32,18 @@ define([
         }
 
         for(var i in currentObj.description['children']) {
+
           currentObj.addChild(i, currentObj.description['children'][i]);
         }
-        resolve(currentObj.owner);
+        return Promise.all(currentObj.children.map(function(sceneObj) {
+             return sceneObj.setup();
+        })).then(function() {
+             resolve(currentObj.owner);
+        });
+
       }
+
+      return new Promise(action);
     }
 
     addComponent(comp) {
@@ -59,6 +67,7 @@ define([
     // enfant.
     addChild(objectName, child) {
       this.children.push(SceneObject.create(objectName, child));
+
     }
 
     // ## Fonction *getChild*
@@ -77,7 +86,7 @@ define([
     // avec l'objet courant. Voir la méthode `findObject` de la
     // classe *Scene*.
     findObjectInScene(objectName) {
-      this.owner.findObject(objectName);
+      return this.owner.findObject(objectName);
     }
 
     // ## Méthode *display*
@@ -85,10 +94,10 @@ define([
     // de l'objet.
     display(dT) {
       for(var i in this.components) {
-        this.components[i].display();
+        this.components[i].obj.display(dT);
       }
       for(var i in this.children) {
-        this.children[i].display();
+        this.children[i].display(dT);
       }
     }
 
@@ -97,10 +106,10 @@ define([
     // de l'objet.
     update(dT) {
       for(var i in this.components) {
-        this.components[i].update();
+        this.components[i].obj.update(dT);
       }
       for(var i in this.children) {
-        this.children[i].update();
+        this.children[i].update(dT);
       }
     }
   }
