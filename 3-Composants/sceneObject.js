@@ -34,7 +34,6 @@ define([
     // La méthode *addChild* ajoute à l'objet courant un objet
     // enfant.
     addChild(objectName, child) {
-      //var myChild = SceneObject.create(objectName, child, this.owner);
       this.children[objectName]=child;
     }
 
