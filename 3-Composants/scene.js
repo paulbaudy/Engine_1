@@ -18,35 +18,42 @@ define([
     // hiérarchie est configurée correctement.
 
     static create(description) {
-      const scene = new Scene(description);
-      scene.objects = [];
-
+      this.scene = new Scene(description);
+        window.scene = this.scene; //TODO voir pour autrement
+      this.scene.objects = [];
+      var objComponents = [];
       var promises = [];
 
-      for(var i in description) {
-        var sceneObject = SceneObject.create(i, description[i], scene);
-        promises.push(sceneObject);
-        scene.objects.push(sceneObject);
-      }
+        for(var i in description) {
+            var objName = i;
+            var sceneObject = new SceneObject(description);
+            if(this.scene.objects[objName])
+                objName = i+"bis";
 
-      /*for(var i in scene.objects) {
-        scene.objects[i].setup();
-      }*/
-      /*Promise.all(promises).then(function() {
-        console.log("Promises ok!");
-        return Promise.resolve(scene);
-      });*/
+            this.scene.objects[objName] = sceneObject;
 
-      return Promise.all(promises.map(function(sceneObj) {
-        console.log("bonjour");
-           return sceneObj.setup();
-      })).then(function() {
+            for(var childName in description[i].children){
+                var name = childName;
+                var child = new SceneObject(description[i].children[childName]);
+                if(this.scene.objects[name])
+                    name = name+"bis";
+                sceneObject.addChild(childName, child);
+                this.scene.objects[name] = child;
+                for(var type in description[i].children[childName].components){
+                    objComponents.push({obj : child.addComponent(type), descr : description[i].children[childName].components[type]});
+                }
+            }
+            for(var type in description[i].components){
+                objComponents.push({obj : this.scene.objects[objName].addComponent(type), descr : description[i].components[type]});
+            }
+        }
 
-           return scene;
-      });
-      /* return new Promise(function(resolve) {
-          resolve(scene);
-      }); */
+        console.log(objComponents);
+        for(var comp in objComponents)
+            promises.push(objComponents[comp].obj.setup(objComponents[comp].descr));
+
+        var self = this;
+        return Promise.all(promises).then(function(){ return self.scene; });
     }
 
     // ## Méthode *display*
@@ -71,11 +78,7 @@ define([
     // La fonction *findObject* retourne l'objet de la scène
     // portant le nom spécifié.
     findObject(objectName) {
-      for(var i in this.objects) {
-        var res = this.objects[i].findObjectInChildren(objectName);
-        if(res) return res;
-      }
-      return null;
+      return this.objects[objectName];
     }
   }
 
