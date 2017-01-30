@@ -88,7 +88,7 @@ define([
     // nom spécifié, dont l'objet courant est le parent.
     getChild(objectName) {
       for(var i in this.children) {
-        if(this.children[i].name == objectName) return this.children[i];
+        if(this.children[i].name == objectName) return this.children[i]; //.description pour avoir juste le contenu
       }
       return null;
     }
