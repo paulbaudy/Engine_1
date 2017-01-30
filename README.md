@@ -1,3 +1,2 @@
 # Engine_Ex1
-BAUDY Paul
-COCQ Elodie
+BAUDY Paul - COCQ Elodie

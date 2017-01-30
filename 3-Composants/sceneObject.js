@@ -42,7 +42,7 @@ define([
     // La fonction *getChild* retourne un objet existant portant le
     // nom spécifié, dont l'objet courant est le parent.
     getChild(objectName) {
-        return this.children[objectName];
+      return this.children[objectName];
     }
 
     // ## Fonction *fingObjectInScene*
